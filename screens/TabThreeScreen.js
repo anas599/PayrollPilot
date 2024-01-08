@@ -1,39 +1,4 @@
-// import { StyleSheet } from "react-native";
-
-// import EditScreenInfo from "../components/EditScreenInfo";
-// import { Text, View } from "../components/Themed";
-
-// export default function TabThreeScreen() {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Tab One</Text>
-//       <View
-//         style={styles.separator}
-//         lightColor="#eee"
-//         darkColor="rgba(255,255,255,0.1)"
-//       />
-//       <EditScreenInfo path="/screens/TabOneScreen.tsx9900" />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-//   title: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//   },
-//   separator: {
-//     marginVertical: 30,
-//     height: 1,
-//     width: "80%",
-//   },
-// });
-
+import Swipeout from "react-native-swipeout";
 import { useState, useEffect } from "react";
 import {
   Platform,
@@ -43,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Button,
 } from "react-native";
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
@@ -87,19 +53,39 @@ function Items({ done: doneHeading, onPressItem }) {
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionHeading}>{heading}</Text>
       {items.map(({ id, done, value }) => (
-        <TouchableOpacity
-          key={id}
-          onPress={() => onPressItem && onPressItem(id)}
-          style={{
-            backgroundColor: done ? "#1c9963" : "#fff",
-            borderColor: "#000",
-            borderWidth: 1,
-            padding: 8,
-          }}
+        <Swipeout
+          right={[
+            {
+              text: "Delete",
+              backgroundColor: "#FF3B30",
+              onPress: () => onPressItem(id),
+            },
+          ]}
+          autoClose={true}
+          backgroundColor="transparent"
         >
-          <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            key={id}
+            // onPress={() => onPressItem && onPressItem(id)} // This is the original code when touched it will remove the item
+            onPress={() => onPressItem}
+            style={{
+              backgroundColor: done ? "#1c9963" : "#fff",
+              borderColor: "#000",
+              borderWidth: 1,
+              padding: 8,
+            }}
+          >
+            <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
+          </TouchableOpacity>
+        </Swipeout>
       ))}
+
+      <Text style={styles.sectionHeading}>
+        Number of Hours:
+        {/* count the total value */}
+        {items.reduce((sum, item) => sum + parseInt(item.value), 0)}
+      </Text>
+      <Text style={styles.sectionHeading}>Total Entries: {items.length}</Text>
     </View>
   );
 }
@@ -136,7 +122,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>SQLite Example</Text>
+      <Text style={styles.heading}>Job Payroll</Text>
 
       {Platform.OS === "web" ? (
         <View
@@ -151,13 +137,18 @@ export default function App() {
           <View style={styles.flexRow}>
             <TextInput
               onChangeText={(text) => setText(text)}
-              onSubmitEditing={() => {
+              placeholder="what do you need to do?"
+              placeholderTextColor="#ff0000" // Red color for placeholder text
+              style={styles.input}
+              value={text}
+              keyboardType="numeric" // Only accept numeric input
+            />
+            <Button
+              title="Add"
+              onPress={() => {
                 add(text);
                 setText(null);
               }}
-              placeholder="what do you need to do?"
-              style={styles.input}
-              value={text}
             />
           </View>
           <ScrollView style={styles.listArea}>
