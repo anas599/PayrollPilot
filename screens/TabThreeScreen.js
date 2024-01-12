@@ -150,6 +150,21 @@ export default function App() {
                 setText(null);
               }}
             />
+            <TextInput
+              onChangeText={(text) => setText(text)}
+              placeholder="Pay Rate"
+              placeholderTextColor="#ff0000" // Red color for placeholder text
+              style={styles.input}
+              value={text}
+              keyboardType="numeric" // Only accept numeric input
+            />
+            <Button
+              title="Add"
+              onPress={() => {
+                add(text);
+                setText(null);
+              }}
+            />
           </View>
           <ScrollView style={styles.listArea}>
             <Items
