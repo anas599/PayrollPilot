@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
-
+import TimePicker from "./TabOneScreen";
 function openDatabase() {
   if (Platform.OS === "web") {
     return {
@@ -50,43 +50,46 @@ function Items({ done: doneHeading, onPressItem }) {
   }
 
   return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionHeading}>{heading}</Text>
-      {items.map(({ id, done, value }) => (
-        <Swipeout
-          right={[
-            {
-              text: "Delete",
-              backgroundColor: "#FF3B30",
-              onPress: () => onPressItem(id),
-            },
-          ]}
-          autoClose={true}
-          backgroundColor="transparent"
-        >
-          <TouchableOpacity
-            key={id}
-            // onPress={() => onPressItem && onPressItem(id)} // This is the original code when touched it will remove the item
-            onPress={() => onPressItem}
-            style={{
-              backgroundColor: done ? "#1c9963" : "#fff",
-              borderColor: "#000",
-              borderWidth: 1,
-              padding: 8,
-            }}
+    <>
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeading}>{heading}</Text>
+        {items.map(({ id, done, value }) => (
+          <Swipeout
+            right={[
+              {
+                text: "Delete",
+                backgroundColor: "#FF3B30",
+                onPress: () => onPressItem(id),
+              },
+            ]}
+            autoClose={true}
+            backgroundColor="transparent"
           >
-            <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
-          </TouchableOpacity>
-        </Swipeout>
-      ))}
+            <TouchableOpacity
+              key={id}
+              // onPress={() => onPressItem && onPressItem(id)} // This is the original code when touched it will remove the item
+              onPress={() => onPressItem}
+              style={{
+                backgroundColor: done ? "#1c9963" : "#fff",
+                borderColor: "#000",
+                borderWidth: 1,
+                padding: 8,
+              }}
+            >
+              <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
+            </TouchableOpacity>
+          </Swipeout>
+        ))}
 
-      <Text style={styles.sectionHeading}>
-        Number of Hours:
-        {/* count the total value */}
-        {items.reduce((sum, item) => sum + parseInt(item.value), 0)}
-      </Text>
-      <Text style={styles.sectionHeading}>Total Entries: {items.length}</Text>
-    </View>
+        <Text style={styles.sectionHeading}>
+          Number of Hours:
+          {/* count the total value */}
+          {items.reduce((sum, item) => sum + parseInt(item.value), 0)}
+        </Text>
+        <Text style={styles.sectionHeading}>Total Entries: {items.length}</Text>
+      </View>
+      <TimePicker />
+    </>
   );
 }
 
