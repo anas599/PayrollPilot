@@ -13,6 +13,7 @@ import {
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
 import TimePicker from "./TabOneScreen";
+
 function openDatabase() {
   if (Platform.OS === "web") {
     return {
@@ -67,7 +68,6 @@ function Items({ done: doneHeading, onPressItem }) {
           >
             <TouchableOpacity
               key={id}
-              // onPress={() => onPressItem && onPressItem(id)} // This is the original code when touched it will remove the item
               onPress={() => onPressItem}
               style={{
                 backgroundColor: done ? "#1c9963" : "#fff",
@@ -94,7 +94,8 @@ function Items({ done: doneHeading, onPressItem }) {
 }
 
 export default function App() {
-  const [text, setText] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
   const [forceUpdate, forceUpdateId] = useForceUpdate();
 
   useEffect(() => {
@@ -105,22 +106,23 @@ export default function App() {
     });
   }, []);
 
-  const add = (text) => {
-    // is text empty?
-    if (text === null || text === "") {
-      return false;
-    }
+  const add = () => {
+    if (startTime && endTime) {
+      const diffInHours = Math.abs(endTime - startTime) / 36e5;
 
-    db.transaction(
-      (tx) => {
-        tx.executeSql("insert into items (done, value) values (0, ?)", [text]);
-        tx.executeSql("select * from items", [], (_, { rows }) =>
-          console.log(JSON.stringify(rows))
-        );
-      },
-      null,
-      forceUpdate
-    );
+      db.transaction(
+        (tx) => {
+          tx.executeSql("insert into items (done, value) values (0, ?)", [
+            diffInHours,
+          ]);
+          tx.executeSql("select * from items", [], (_, { rows }) =>
+            console.log(JSON.stringify(rows))
+          );
+        },
+        null,
+        forceUpdate
+      );
+    }
   };
 
   return (
@@ -138,36 +140,9 @@ export default function App() {
       ) : (
         <>
           <View style={styles.flexRow}>
-            <TextInput
-              onChangeText={(text) => setText(text)}
-              placeholder="what do you need to do?"
-              placeholderTextColor="#ff0000" // Red color for placeholder text
-              style={styles.input}
-              value={text}
-              keyboardType="numeric" // Only accept numeric input
-            />
-            <Button
-              title="Add"
-              onPress={() => {
-                add(text);
-                setText(null);
-              }}
-            />
-            <TextInput
-              onChangeText={(text) => setText(text)}
-              placeholder="Pay Rate"
-              placeholderTextColor="#ff0000" // Red color for placeholder text
-              style={styles.input}
-              value={text}
-              keyboardType="numeric" // Only accept numeric input
-            />
-            <Button
-              title="Add"
-              onPress={() => {
-                add(text);
-                setText(null);
-              }}
-            />
+            <TimePicker onTimeSelected={setStartTime} />
+            <TimePicker onTimeSelected={setEndTime} />
+            <Button title="Add" onPress={add} />
           </View>
           <ScrollView style={styles.listArea}>
             <Items
@@ -222,7 +197,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   flexRow: {
-    flexDirection: "row",
+    flexDirection: "column",
   },
   input: {
     borderColor: "#4630eb",
