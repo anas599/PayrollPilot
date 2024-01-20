@@ -1,5 +1,6 @@
 import Swipeout from "react-native-swipeout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { TimeContext } from "../context/TimeContext";
 import {
   Platform,
   ScrollView,
@@ -13,7 +14,6 @@ import {
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
 import TimePicker from "./TabOneScreen";
-
 function openDatabase() {
   if (Platform.OS === "web") {
     return {
@@ -49,9 +49,10 @@ function Items({ done: doneHeading, onPressItem }) {
   if (items === null || items.length === 0) {
     return null;
   }
-
+  const { hoursDifference, setHoursDifference } = useContext(TimeContext);
   return (
-    <>
+    <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
+      <TimePicker setHoursDifference={setHoursDifference} />
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeading}>{heading}</Text>
         {items.map(({ id, done, value }) => (
@@ -68,6 +69,7 @@ function Items({ done: doneHeading, onPressItem }) {
           >
             <TouchableOpacity
               key={id}
+              // onPress={() => onPressItem && onPressItem(id)} // This is the original code when touched it will remove the item
               onPress={() => onPressItem}
               style={{
                 backgroundColor: done ? "#1c9963" : "#fff",
@@ -88,15 +90,15 @@ function Items({ done: doneHeading, onPressItem }) {
         </Text>
         <Text style={styles.sectionHeading}>Total Entries: {items.length}</Text>
       </View>
-      <TimePicker />
-    </>
+    </TimeContext.Provider>
   );
 }
 
 export default function App() {
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
+  const [text, setText] = useState(null);
+  const [payRate, setPayRate] = useState(null);
   const [forceUpdate, forceUpdateId] = useForceUpdate();
+  const { hoursDifference } = useContext(TimeContext);
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -106,25 +108,25 @@ export default function App() {
     });
   }, []);
 
-  const add = () => {
-    if (startTime && endTime) {
-      const diffInHours = Math.abs(endTime - startTime) / 36e5;
-
-      db.transaction(
-        (tx) => {
-          tx.executeSql("insert into items (done, value) values (0, ?)", [
-            diffInHours,
-          ]);
-          tx.executeSql("select * from items", [], (_, { rows }) =>
-            console.log(JSON.stringify(rows))
-          );
-        },
-        null,
-        forceUpdate
-      );
+  const add = (hoursDifference) => {
+    // is hoursDifference empty?
+    if (hoursDifference === null || hoursDifference === "") {
+      return false;
     }
-  };
 
+    db.transaction(
+      (tx) => {
+        tx.executeSql("insert into items (done, value) values (0, ?)", [
+          hoursDifference,
+        ]);
+        tx.executeSql("select * from items", [], (_, { rows }) =>
+          console.log(JSON.stringify(rows))
+        );
+      },
+      null,
+      forceUpdate
+    );
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Job Payroll</Text>
@@ -140,9 +142,40 @@ export default function App() {
       ) : (
         <>
           <View style={styles.flexRow}>
-            <TimePicker onTimeSelected={setStartTime} />
-            <TimePicker onTimeSelected={setEndTime} />
-            <Button title="Add" onPress={add} />
+            <TextInput
+              onChangeText={(text) => setText(text)}
+              placeholder={
+                hoursDifference?.toString().length > 0
+                  ? hoursDifference.toString()
+                  : "Hours"
+              }
+              placeholderTextColor="#ff0000" // Red color for placeholder text
+              style={styles.input}
+              value={hoursDifference} // Use hoursDifference here
+              keyboardType="numeric" // Only accept numeric input
+            />
+            <Button
+              title="Add"
+              onPress={() => {
+                add(hoursDifference); // Use hoursDifference here
+                setText(null);
+              }}
+            />
+            <TextInput
+              onChangeText={(payRate) => setPayRate(payRate)}
+              placeholder="Pay Rate"
+              placeholderTextColor="#ff0000" // Red color for placeholder text
+              style={styles.input}
+              value={payRate}
+              keyboardType="numeric" // Only accept numeric input
+            />
+            <Button
+              title="Add"
+              onPress={() => {
+                add(text);
+                setText(null);
+              }}
+            />
           </View>
           <ScrollView style={styles.listArea}>
             <Items
