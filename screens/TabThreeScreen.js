@@ -3,7 +3,16 @@ import { useState, useEffect, useContext } from "react";
 import { TimeContext } from "../context/TimeContext";
 import { PayRateContext } from "../context/TimeContext";
 import { Button } from "native-base";
-import { NativeBaseProvider } from "native-base";
+import { InputNativeBase } from "../components/FormInput";
+import {
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  InputRightAddon,
+  Stack,
+  Center,
+  NativeBaseProvider,
+} from "native-base";
 
 import {
   Platform,
@@ -191,7 +200,7 @@ export default function App() {
                     value={hoursDifference} // Use hoursDifference here
                     keyboardType="numeric" // Only accept numeric input
                   />
-                  <TextInput
+                  <InputNativeBase
                     onChangeText={(payRate) => setPayRate(payRate)}
                     placeholder="Pay Rate"
                     placeholderTextColor="#ff0000"
@@ -199,14 +208,16 @@ export default function App() {
                     value={payRate}
                     keyboardType="numeric" // Only accept numeric input
                   />
+                  {/* <InputNativeBase
+                    onChangeText={(text) => setText(text)}
+                    value={payRate}
+                  /> */}
                   {payRateError && (
                     <Text style={styles.errorMessage}>{payRateError}</Text>
                   )}
                 </View>
                 <View style={styles.buttonContainer}>
                   <Button
-                    title="Add"
-                    color="#841584" // Purple color for the button
                     onPress={() => {
                       const isSuccessful = add(hoursDifference, payRate); // Pass payRate here
                       if (isSuccessful) {
