@@ -69,7 +69,6 @@ function Items({ done: doneHeading, onPressItem }) {
           >
             <TouchableOpacity
               key={id}
-              // onPress={() => onPressItem && onPressItem(id)} // This is the original code when touched it will remove the item
               onPress={() => onPressItem}
               style={{
                 backgroundColor: done ? "#1c9963" : "#fff",
@@ -100,7 +99,7 @@ export default function App() {
   const [text, setText] = useState(null);
   const [payRate, setPayRate] = useState(null);
   const [forceUpdate, forceUpdateId] = useForceUpdate();
-  const { hoursDifference } = useContext(TimeContext);
+  const { hoursDifference, setHoursDifference } = useContext(TimeContext);
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -161,6 +160,7 @@ export default function App() {
               onPress={() => {
                 add(hoursDifference); // Use hoursDifference here
                 setText(null);
+                setHoursDifference(null);
               }}
             />
             <TextInput
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   flexRow: {
-    flexDirection: "column",
+    flexDirection: "row",
   },
   input: {
     borderColor: "#4630eb",
