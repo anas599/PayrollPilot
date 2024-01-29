@@ -86,7 +86,9 @@ function Items({ done: doneHeading, onPressItem }) {
         <Text style={styles.sectionHeading}>
           Number of Hours:
           {/* count the total value */}
-          {items.reduce((sum, item) => sum + parseInt(item.value), 0)}
+          {items
+            .reduce((sum, item) => sum + parseFloat(item.value), 0)
+            .toFixed(1)}
         </Text>
         <Text style={styles.sectionHeading}>Total Entries: {items.length}</Text>
       </View>
