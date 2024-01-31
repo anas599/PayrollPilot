@@ -69,15 +69,3 @@ const TimePicker = ({ setHoursDifference }) => {
 };
 
 export default TimePicker;
-// MyComponent.js
-// import { View, Text, Button } from "react-native";
-
-// import React, { useContext } from "react";
-// import { TimeContext } from "../context/TimeContext";
-
-// const MyComponent = () => {
-//   const { hoursDifference } = useContext(TimeContext);
-
-//   return <Text>{hoursDifference}</Text>;
-// };
-// export default MyComponent;
