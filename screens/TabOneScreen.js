@@ -22,6 +22,9 @@ const TimePicker = ({ setHoursDifference }) => {
   const handleEndTimeConfirm = (selectedTime) => {
     setEndTime(selectedTime);
     hideEndTimePicker();
+    setTimeout(() => {
+      calculateHoursDifference();
+    }, 500);
   };
 
   const calculateHoursDifference = () => {
@@ -56,10 +59,10 @@ const TimePicker = ({ setHoursDifference }) => {
           onConfirm={handleEndTimeConfirm}
           onCancel={hideEndTimePicker}
         />
-        <Button
+        {/* <Button
           title="Calculate Hours Difference"
           onPress={calculateHoursDifference}
-        />
+        /> */}
         {hoursDifference !== null && (
           <Text>Hours Difference: {hoursDifference.toFixed(2)} hours</Text>
         )}
