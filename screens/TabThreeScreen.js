@@ -166,7 +166,7 @@ export default function App() {
             <TextInput
               onChangeText={(payRate) => setPayRate(payRate)}
               placeholder="Pay Rate"
-              placeholderTextColor="#ff0000" // Red color for placeholder text
+              placeholderTextColor="#ff0000"
               style={styles.input}
               value={payRate}
               keyboardType="numeric" // Only accept numeric input
@@ -178,6 +178,21 @@ export default function App() {
                 setText(null);
               }}
             />
+            <TextInput
+              // onChangeText={(payRate) => setPayRate(payRate)}
+              placeholder="Total Pay"
+              placeholderTextColor="#ff0000"
+              style={styles.input}
+              value={payRate * hoursDifference}
+              keyboardType="numeric" // Only accept numeric input
+            />
+            {/* <Button
+              title="Add"
+              onPress={() => {
+                add(text);
+                setText(null);
+              }}
+            /> */}
           </View>
           <ScrollView style={styles.listArea}>
             <Items
