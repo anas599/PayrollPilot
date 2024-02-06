@@ -109,6 +109,7 @@ function Items({ done: doneHeading, onPressItem }) {
 export default function App() {
   const [text, setText] = useState(null);
   const [payRate, setPayRate] = useState(null);
+  const [payRateError, setPayRateError] = useState(null);
   const [forceUpdate, forceUpdateId] = useForceUpdate();
   const { hoursDifference, setHoursDifference } = useContext(TimeContext);
 
@@ -133,9 +134,13 @@ export default function App() {
       payRate === null ||
       payRate === ""
     ) {
-      return false;
+      setPayRateError("Pay rate must be set.");
+      return false; // Return false if the operation was not successful
     }
 
+    setPayRateError(null); // Clear the error message if payRate is set
+
+    // Perform the database transaction
     db.transaction(
       (tx) => {
         tx.executeSql(
@@ -149,6 +154,8 @@ export default function App() {
       null,
       forceUpdate
     );
+
+    return true; // Return true if the operation was successful
   };
   return (
     <NativeBaseProvider>
@@ -192,16 +199,21 @@ export default function App() {
                     value={payRate}
                     keyboardType="numeric" // Only accept numeric input
                   />
+                  {payRateError && (
+                    <Text style={styles.errorMessage}>{payRateError}</Text>
+                  )}
                 </View>
                 <View style={styles.buttonContainer}>
                   <Button
                     title="Add"
                     color="#841584" // Purple color for the button
                     onPress={() => {
-                      add(hoursDifference, payRate); // Pass payRate here
-                      setText(null);
-                      setHoursDifference(null);
-                      setPayRate(null);
+                      const isSuccessful = add(hoursDifference, payRate); // Pass payRate here
+                      if (isSuccessful) {
+                        setText(null);
+                        setHoursDifference(null);
+                        setPayRate(null);
+                      }
                     }}
                   >
                     Add
@@ -293,5 +305,9 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 18,
     marginBottom: 8,
+  },
+  errorMessage: {
+    color: "red",
+    marginTop: 8,
   },
 });
