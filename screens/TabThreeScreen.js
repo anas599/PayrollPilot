@@ -2,6 +2,8 @@ import Swipeout from "react-native-swipeout";
 import { useState, useEffect, useContext } from "react";
 import { TimeContext } from "../context/TimeContext";
 import { PayRateContext } from "../context/TimeContext";
+import { Button } from "native-base";
+import { NativeBaseProvider } from "native-base";
 
 import {
   Platform,
@@ -11,7 +13,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Button,
 } from "react-native";
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
@@ -150,75 +151,83 @@ export default function App() {
     );
   };
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Job Payroll</Text>
+    <NativeBaseProvider>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Job Payroll</Text>
 
-      {Platform.OS === "web" ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={styles.heading}>
-            Expo SQlite is not supported on web!
-          </Text>
-        </View>
-      ) : (
-        <>
-          <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
-            <TimePicker setHoursDifference={setHoursDifference} />
+        {Platform.OS === "web" ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={styles.heading}>
+              Expo SQlite is not supported on web!
+            </Text>
+          </View>
+        ) : (
+          <>
+            <TimeContext.Provider
+              value={{ hoursDifference, setHoursDifference }}
+            >
+              <TimePicker setHoursDifference={setHoursDifference} />
 
-            <View style={styles.flexRow}>
-              <View style={{ flexDirection: "column" }}>
-                <TextInput
-                  onChangeText={(text) => setText(text)}
-                  placeholder={
-                    hoursDifference?.toString().length > 0
-                      ? hoursDifference.toString()
-                      : "Hours"
-                  }
-                  placeholderTextColor="#ff0000" // Red color for placeholder text
-                  style={styles.input}
-                  value={hoursDifference} // Use hoursDifference here
-                  keyboardType="numeric" // Only accept numeric input
-                />
-                <TextInput
-                  onChangeText={(payRate) => setPayRate(payRate)}
-                  placeholder="Pay Rate"
-                  placeholderTextColor="#ff0000"
-                  style={styles.input}
-                  value={payRate}
-                  keyboardType="numeric" // Only accept numeric input
-                />
+              <View style={styles.flexRow}>
+                <View style={{ flexDirection: "column" }}>
+                  <TextInput
+                    onChangeText={(text) => setText(text)}
+                    placeholder={
+                      hoursDifference?.toString().length > 0
+                        ? hoursDifference.toString()
+                        : "Hours"
+                    }
+                    placeholderTextColor="#ff0000" // Red color for placeholder text
+                    style={styles.input}
+                    value={hoursDifference} // Use hoursDifference here
+                    keyboardType="numeric" // Only accept numeric input
+                  />
+                  <TextInput
+                    onChangeText={(payRate) => setPayRate(payRate)}
+                    placeholder="Pay Rate"
+                    placeholderTextColor="#ff0000"
+                    style={styles.input}
+                    value={payRate}
+                    keyboardType="numeric" // Only accept numeric input
+                  />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <Button
+                    title="Add"
+                    color="#841584" // Purple color for the button
+                    onPress={() => {
+                      add(hoursDifference, payRate); // Pass payRate here
+                      setText(null);
+                      setHoursDifference(null);
+                      setPayRate(null);
+                    }}
+                  >
+                    Add
+                  </Button>
+                </View>
               </View>
-              <Button
-                title="Add"
-                onPress={() => {
-                  add(hoursDifference, payRate); // Pass payRate here
-                  setText(null);
-                  setHoursDifference(null);
-                  setPayRate(null);
-                }}
-              />
-            </View>
-          </TimeContext.Provider>
+            </TimeContext.Provider>
 
-          <ScrollView style={styles.listArea}>
-            <Items
-              key={`forceupdate-todo-${forceUpdateId}`}
-              done={false}
-              onPressItem={(id) =>
-                db.transaction(
-                  (tx) => {
-                    tx.executeSql(`update items set done = 1 where id = ?;`, [
-                      id,
-                    ]);
-                  },
-                  null,
-                  forceUpdate
-                )
-              }
-            />
-            {/* this is for completed to be rendered  */}
-            {/* <Items
+            <ScrollView style={styles.listArea}>
+              <Items
+                key={`forceupdate-todo-${forceUpdateId}`}
+                done={false}
+                onPressItem={(id) =>
+                  db.transaction(
+                    (tx) => {
+                      tx.executeSql(`update items set done = 1 where id = ?;`, [
+                        id,
+                      ]);
+                    },
+                    null,
+                    forceUpdate
+                  )
+                }
+              />
+              {/* this is for completed to be rendered  */}
+              {/* <Items
               done
               key={`forceupdate-done-${forceUpdateId}`}
               onPressItem={(id) =>
@@ -231,10 +240,11 @@ export default function App() {
                 )
               }
             /> */}
-          </ScrollView>
-        </>
-      )}
-    </View>
+            </ScrollView>
+          </>
+        )}
+      </View>
+    </NativeBaseProvider>
   );
 }
 
@@ -244,6 +254,11 @@ function useForceUpdate() {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    // width: "auto", // or a specific width like '50%' or '200'
+    alignItems: "center", // to center the button horizontally
+    padding: 10, // add some padding to the button
+  },
   container: {
     backgroundColor: "#fff",
     flex: 1,
