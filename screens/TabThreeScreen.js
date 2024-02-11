@@ -84,9 +84,9 @@ function Items({ done: doneHeading, onPressItem }) {
                 padding: 8,
               }}
             >
-              <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
+              <Text style={{ color: done ? "#fff" : "#000" }}>{value}/H</Text>
               <Text style={{ color: done ? "#fff" : "#000" }}>
-                {value * Number(rate)}
+                {value * Number(rate)}$
               </Text>
             </TouchableOpacity>
           </Swipeout>
