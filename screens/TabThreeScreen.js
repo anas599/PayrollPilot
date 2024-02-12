@@ -1,6 +1,8 @@
 import Swipeout from "react-native-swipeout";
 import { useState, useEffect, useContext } from "react";
 import { TimeContext } from "../context/TimeContext";
+import { PayRateContext } from "../context/TimeContext";
+
 import {
   Platform,
   ScrollView,
@@ -47,6 +49,7 @@ function Items({ done: doneHeading, onPressItem }) {
   const heading = doneHeading ? "Completed" : "Todo";
 
   const { hoursDifference, setHoursDifference } = useContext(TimeContext);
+
   if (items === null || items.length === 0) {
     return (
       <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
@@ -59,7 +62,7 @@ function Items({ done: doneHeading, onPressItem }) {
       <TimePicker setHoursDifference={setHoursDifference} />
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeading}>{heading}</Text>
-        {items.map(({ id, done, value }) => (
+        {items.map(({ id, done, value, rate }) => (
           <Swipeout
             right={[
               {
@@ -82,6 +85,9 @@ function Items({ done: doneHeading, onPressItem }) {
               }}
             >
               <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
+              <Text style={{ color: done ? "#fff" : "#000" }}>
+                {value * Number(rate)}
+              </Text>
             </TouchableOpacity>
           </Swipeout>
         ))}
@@ -107,23 +113,34 @@ export default function App() {
 
   useEffect(() => {
     db.transaction((tx) => {
+      // tx.executeSql("select * from items", [], (_, { rows }) =>
+      //   console.log(JSON.stringify(rows))
+      // );
+
       tx.executeSql(
         "create table if not exists items (id integer primary key not null, done int, value text);"
       );
+      tx.executeSql("ALTER TABLE items ADD COLUMN rate TEXT;");
     });
   }, []);
 
-  const add = (hoursDifference) => {
-    // is hoursDifference empty?
-    if (hoursDifference === null || hoursDifference === "") {
+  const add = (hoursDifference, payRate) => {
+    // Check if hoursDifference and payRate are not empty
+    if (
+      hoursDifference === null ||
+      hoursDifference === "" ||
+      payRate === null ||
+      payRate === ""
+    ) {
       return false;
     }
 
     db.transaction(
       (tx) => {
-        tx.executeSql("insert into items (done, value) values (0, ?)", [
-          hoursDifference,
-        ]);
+        tx.executeSql(
+          "insert into items (done, value, rate) values (0, ?, ?)",
+          [hoursDifference, payRate]
+        );
         tx.executeSql("select * from items", [], (_, { rows }) =>
           console.log(JSON.stringify(rows))
         );
@@ -162,9 +179,10 @@ export default function App() {
             <Button
               title="Add"
               onPress={() => {
-                add(hoursDifference); // Use hoursDifference here
+                add(hoursDifference, payRate); // Pass payRate here
                 setText(null);
                 setHoursDifference(null);
+                setPayRate(null);
               }}
             />
             <TextInput
