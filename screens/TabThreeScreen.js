@@ -46,10 +46,14 @@ function Items({ done: doneHeading, onPressItem }) {
 
   const heading = doneHeading ? "Completed" : "Todo";
 
-  if (items === null || items.length === 0) {
-    return null;
-  }
   const { hoursDifference, setHoursDifference } = useContext(TimeContext);
+  if (items === null || items.length === 0) {
+    return (
+      <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
+        <TimePicker setHoursDifference={setHoursDifference} />
+      </TimeContext.Provider>
+    );
+  }
   return (
     <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
       <TimePicker setHoursDifference={setHoursDifference} />
