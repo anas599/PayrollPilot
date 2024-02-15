@@ -210,7 +210,8 @@ export default function App() {
                 )
               }
             />
-            <Items
+            {/* this is for completed to be rendered  */}
+            {/* <Items
               done
               key={`forceupdate-done-${forceUpdateId}`}
               onPressItem={(id) =>
@@ -222,7 +223,7 @@ export default function App() {
                   forceUpdate
                 )
               }
-            />
+            /> */}
           </ScrollView>
         </>
       )}
