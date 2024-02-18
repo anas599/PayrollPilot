@@ -24,7 +24,7 @@ const TimePicker = ({ setHoursDifference }) => {
     hideEndTimePicker();
     setTimeout(() => {
       calculateHoursDifference();
-    }, 500);
+    }, 1000);
   };
 
   const calculateHoursDifference = () => {
