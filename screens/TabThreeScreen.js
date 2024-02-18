@@ -59,7 +59,7 @@ function Items({ done: doneHeading, onPressItem }) {
   }
   return (
     <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
-      <TimePicker setHoursDifference={setHoursDifference} />
+      {/* <TimePicker setHoursDifference={setHoursDifference} /> */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeading}>{heading}</Text>
         {items.map(({ id, done, value, rate }) => (
@@ -163,39 +163,43 @@ export default function App() {
         </View>
       ) : (
         <>
-          <View style={styles.flexRow}>
-            <View style={{ flexDirection: "column" }}>
-              <TextInput
-                onChangeText={(text) => setText(text)}
-                placeholder={
-                  hoursDifference?.toString().length > 0
-                    ? hoursDifference.toString()
-                    : "Hours"
-                }
-                placeholderTextColor="#ff0000" // Red color for placeholder text
-                style={styles.input}
-                value={hoursDifference} // Use hoursDifference here
-                keyboardType="numeric" // Only accept numeric input
-              />
-              <TextInput
-                onChangeText={(payRate) => setPayRate(payRate)}
-                placeholder="Pay Rate"
-                placeholderTextColor="#ff0000"
-                style={styles.input}
-                value={payRate}
-                keyboardType="numeric" // Only accept numeric input
+          <TimeContext.Provider value={{ hoursDifference, setHoursDifference }}>
+            <TimePicker setHoursDifference={setHoursDifference} />
+
+            <View style={styles.flexRow}>
+              <View style={{ flexDirection: "column" }}>
+                <TextInput
+                  onChangeText={(text) => setText(text)}
+                  placeholder={
+                    hoursDifference?.toString().length > 0
+                      ? hoursDifference.toString()
+                      : "Hours"
+                  }
+                  placeholderTextColor="#ff0000" // Red color for placeholder text
+                  style={styles.input}
+                  value={hoursDifference} // Use hoursDifference here
+                  keyboardType="numeric" // Only accept numeric input
+                />
+                <TextInput
+                  onChangeText={(payRate) => setPayRate(payRate)}
+                  placeholder="Pay Rate"
+                  placeholderTextColor="#ff0000"
+                  style={styles.input}
+                  value={payRate}
+                  keyboardType="numeric" // Only accept numeric input
+                />
+              </View>
+              <Button
+                title="Add"
+                onPress={() => {
+                  add(hoursDifference, payRate); // Pass payRate here
+                  setText(null);
+                  setHoursDifference(null);
+                  setPayRate(null);
+                }}
               />
             </View>
-            <Button
-              title="Add"
-              onPress={() => {
-                add(hoursDifference, payRate); // Pass payRate here
-                setText(null);
-                setHoursDifference(null);
-                setPayRate(null);
-              }}
-            />
-          </View>
+          </TimeContext.Provider>
 
           <ScrollView style={styles.listArea}>
             <Items
