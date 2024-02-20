@@ -164,18 +164,28 @@ export default function App() {
       ) : (
         <>
           <View style={styles.flexRow}>
-            <TextInput
-              onChangeText={(text) => setText(text)}
-              placeholder={
-                hoursDifference?.toString().length > 0
-                  ? hoursDifference.toString()
-                  : "Hours"
-              }
-              placeholderTextColor="#ff0000" // Red color for placeholder text
-              style={styles.input}
-              value={hoursDifference} // Use hoursDifference here
-              keyboardType="numeric" // Only accept numeric input
-            />
+            <View style={{ flexDirection: "column" }}>
+              <TextInput
+                onChangeText={(text) => setText(text)}
+                placeholder={
+                  hoursDifference?.toString().length > 0
+                    ? hoursDifference.toString()
+                    : "Hours"
+                }
+                placeholderTextColor="#ff0000" // Red color for placeholder text
+                style={styles.input}
+                value={hoursDifference} // Use hoursDifference here
+                keyboardType="numeric" // Only accept numeric input
+              />
+              <TextInput
+                onChangeText={(payRate) => setPayRate(payRate)}
+                placeholder="Pay Rate"
+                placeholderTextColor="#ff0000"
+                style={styles.input}
+                value={payRate}
+                keyboardType="numeric" // Only accept numeric input
+              />
+            </View>
             <Button
               title="Add"
               onPress={() => {
@@ -185,37 +195,8 @@ export default function App() {
                 setPayRate(null);
               }}
             />
-            <TextInput
-              onChangeText={(payRate) => setPayRate(payRate)}
-              placeholder="Pay Rate"
-              placeholderTextColor="#ff0000"
-              style={styles.input}
-              value={payRate}
-              keyboardType="numeric" // Only accept numeric input
-            />
-            <Button
-              title="Add"
-              onPress={() => {
-                add(text);
-                setText(null);
-              }}
-            />
-            <TextInput
-              // onChangeText={(payRate) => setPayRate(payRate)}
-              placeholder="Total Pay"
-              placeholderTextColor="#ff0000"
-              style={styles.input}
-              value={payRate * hoursDifference}
-              keyboardType="numeric" // Only accept numeric input
-            />
-            {/* <Button
-              title="Add"
-              onPress={() => {
-                add(text);
-                setText(null);
-              }}
-            /> */}
           </View>
+
           <ScrollView style={styles.listArea}>
             <Items
               key={`forceupdate-todo-${forceUpdateId}`}
@@ -270,7 +251,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   flexRow: {
-    flexDirection: "row",
+    flexDirection: "column",
   },
   input: {
     borderColor: "#4630eb",
